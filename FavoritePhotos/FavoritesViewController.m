@@ -77,13 +77,41 @@
     image.isFavorited = NO;
     [self.kindOfLikedPhotos removeObject:image];
     
+    [self.favorites savedRemovedFavoriteImage:image];
     
     [self.collectionView reloadData];
-    [self.favorites saveWithImage:image];
     
-    return image.photo;
+    return [UIImage imageNamed:@"star-filled"];;
     
 }
+
+#pragma mark - Sharing
+
+- (IBAction)favoritesSharingButtonPressed:(UIBarButtonItem *)sender {
+    
+    NSArray *arrayOfCells = [self.collectionView visibleCells];
+    ImageCollectionViewCell *cellOfInterest = arrayOfCells.firstObject;
+    
+    NSIndexPath *indexPath = [self.collectionView indexPathForCell:cellOfInterest];
+    Image *image = self.kindOfLikedPhotos[indexPath.item];
+    
+    NSArray *sharedImage = [NSArray arrayWithObject:image.photo];
+    
+    UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems: sharedImage applicationActivities:nil];
+    
+    NSArray *excludeActivities = @[UIActivityTypeAirDrop,
+                                   UIActivityTypePrint,
+                                   UIActivityTypeAssignToContact,
+                                   UIActivityTypeSaveToCameraRoll,
+                                   UIActivityTypeAddToReadingList,
+                                   UIActivityTypePostToFlickr,
+                                   UIActivityTypePostToVimeo];
+    
+    activityVC.excludedActivityTypes = excludeActivities;
+    
+    [self presentViewController:activityVC animated:YES completion:nil];
+}
+
 
 
 
